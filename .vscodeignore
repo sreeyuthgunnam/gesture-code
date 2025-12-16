@@ -1,0 +1,26 @@
+# Source files (not needed in extension package)
+.vscode/**
+.vscode-test/**
+src/**
+node_modules/**
+dist/**
+
+# Config files
+.gitignore
+.yarnrc
+**/tsconfig.json
+**/.eslintrc.json
+webpack.config.js
+
+# Development files
+.github/**
+test/**
+**/*.test.ts
+
+# Source maps and TypeScript files
+**/*.map
+**/*.ts
+!out/**/*.js
+
+# Generated packages
+*.vsix

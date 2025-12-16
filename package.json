@@ -1,0 +1,145 @@
+{
+  "name": "gesture-code",
+  "displayName": "Gesture Code",
+  "description": "Control VS Code with hand gestures using your webcam. Wave goodbye to keyboard shortcuts!",
+  "version": "0.2.0",
+  "publisher": "sreeyuthgunnam",
+  "author": {
+    "name": "Sreeyuth"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sreeyuthgunnam/gesture-code"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Accessibility"
+  ],
+  "keywords": [
+    "gesture",
+    "hand tracking",
+    "accessibility",
+    "mediapipe",
+    "webcam",
+    "hands-free",
+    "motion control"
+  ],
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "gesture-code.toggle",
+        "title": "Gesture Code: Toggle Hand Tracking",
+        "icon": "$(hand)"
+      },
+      {
+        "command": "gesture-code.openPanel",
+        "title": "Gesture Code: Open Tracking Panel"
+      },
+      {
+        "command": "gesture-code.configure",
+        "title": "Gesture Code: Configure Gestures"
+      },
+      {
+        "command": "gesture-code.showGestures",
+        "title": "Gesture Code: Show Available Gestures"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "gesture-code.toggle",
+        "key": "ctrl+shift+g",
+        "mac": "cmd+shift+g"
+      }
+    ],
+    "configuration": {
+      "title": "Gesture Code",
+      "properties": {
+        "gestureCode.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable/disable gesture tracking on startup"
+        },
+        "gestureCode.sensitivity": {
+          "type": "number",
+          "default": 0.7,
+          "minimum": 0.1,
+          "maximum": 1,
+          "description": "Gesture detection sensitivity (lower = more sensitive)"
+        },
+        "gestureCode.showOverlay": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show hand tracking overlay visualization"
+        },
+        "gestureCode.gestureCooldown": {
+          "type": "number",
+          "default": 500,
+          "minimum": 100,
+          "maximum": 2000,
+          "description": "Cooldown between gesture recognitions (milliseconds)"
+        },
+        "gestureCode.customMappings": {
+          "type": "object",
+          "default": {},
+          "description": "Custom gesture to command mappings"
+        }
+      }
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "gesture-code.toggle"
+        },
+        {
+          "command": "gesture-code.openPanel"
+        },
+        {
+          "command": "gesture-code.configure"
+        },
+        {
+          "command": "gesture-code.showGestures"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack --mode development",
+    "watch": "webpack --mode development --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "lint:fix": "eslint src --ext ts --fix",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "@vscode/test-electron": "^2.3.8",
+    "@vscode/vsce": "^2.22.0",
+    "css-loader": "^6.8.1",
+    "eslint": "^8.55.0",
+    "sharp": "^0.34.5",
+    "style-loader": "^3.3.3",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.2",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  }
+}

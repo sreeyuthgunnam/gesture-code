@@ -1,0 +1,116 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "npm: compile",
+      "type": "npm",
+      "script": "compile",
+      "problemMatcher": "$ts-webpack",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "group": "build"
+    },
+    {
+      "label": "npm: watch",
+      "type": "npm",
+      "script": "watch",
+      "problemMatcher": "$ts-webpack-watch",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "never",
+        "panel": "dedicated"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "label": "npm: build:webview",
+      "type": "npm",
+      "script": "build:webview",
+      "problemMatcher": "$ts-webpack",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "group": "build"
+    },
+    {
+      "label": "npm: build:all",
+      "type": "npm",
+      "script": "build:all",
+      "problemMatcher": "$ts-webpack",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "group": "build"
+    },
+    {
+      "label": "npm: package",
+      "type": "npm",
+      "script": "package",
+      "problemMatcher": "$ts-webpack",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "group": "build"
+    },
+    {
+      "label": "npm: lint",
+      "type": "npm",
+      "script": "lint",
+      "problemMatcher": "$eslint-stylish",
+      "presentation": {
+        "reveal": "never",
+        "panel": "shared"
+      },
+      "group": "test"
+    },
+    {
+      "label": "npm: lint:fix",
+      "type": "npm",
+      "script": "lint:fix",
+      "problemMatcher": "$eslint-stylish",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "group": "test"
+    },
+    {
+      "label": "npm: test-compile",
+      "type": "npm",
+      "script": "compile-tests",
+      "problemMatcher": "$tsc",
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "group": "test"
+    },
+    {
+      "label": "Create VSIX Package",
+      "type": "shell",
+      "command": "npx",
+      "args": [
+        "vsce",
+        "package"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "group": "build",
+      "dependsOn": "npm: package"
+    }
+  ]
+}
