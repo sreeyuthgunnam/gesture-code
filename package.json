@@ -2,7 +2,7 @@
   "name": "gesture-code",
   "displayName": "Gesture Code",
   "description": "Control VS Code with hand gestures using your webcam. Wave goodbye to keyboard shortcuts!",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "publisher": "sreeyuthgunnam",
   "author": {
     "name": "Sreeyuth"

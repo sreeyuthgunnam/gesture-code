@@ -1,15 +1,44 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    <linearGradient id="bg" x1="156" y1="120" x2="868" y2="904" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#111827"/>
+      <stop offset="1" stop-color="#05070B"/>
     </linearGradient>
+    <linearGradient id="accent" x1="326" y1="270" x2="702" y2="756" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8B5CF6"/>
+      <stop offset="1" stop-color="#22D3EE"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
   </defs>
-  <rect width="128" height="128" rx="24" fill="url(#grad)"/>
-  <g fill="white" transform="translate(20, 15) scale(0.7)">
-    <!-- Hand shape -->
-    <path d="M64 10c-5.5 0-10 4.5-10 10v35c0 2.8-2.2 5-5 5s-5-2.2-5-5V30c0-5.5-4.5-10-10-10s-10 4.5-10 10v45c0 30 20 45 45 45s45-20 45-45V45c0-5.5-4.5-10-10-10s-10 4.5-10 10v10c0 2.8-2.2 5-5 5s-5-2.2-5-5V20c0-5.5-4.5-10-10-10z"/>
-  </g>
-  <!-- Code brackets -->
-  <text x="18" y="105" font-family="monospace" font-size="28" font-weight="bold" fill="white" opacity="0.9">&lt;/&gt;</text>
+
+  <!-- Premium app-icon base -->
+  <rect x="72" y="72" width="880" height="880" rx="220" fill="url(#bg)"/>
+  <rect x="96" y="96" width="832" height="832" rx="196" fill="none" stroke="white" stroke-opacity=".06" stroke-width="4"/>
+
+  <!-- subtle aura -->
+  <circle cx="512" cy="512" r="250" fill="url(#accent)" opacity=".09" filter="url(#soft)"/>
+
+  <!-- Code chevrons -->
+  <path d="M366 350 L222 512 L366 674"
+        fill="none" stroke="white" stroke-width="58" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M658 350 L802 512 L658 674"
+        fill="none" stroke="white" stroke-width="58" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Gesture stroke: a two-part motion mark forming a stylized G / swipe -->
+  <path d="M596 346
+           C523 306 427 320 370 384
+           C306 454 306 566 373 636
+           C437 702 544 708 615 655
+           C651 628 676 589 686 546"
+        fill="none" stroke="url(#accent)" stroke-width="54" stroke-linecap="round"/>
+
+  <!-- gesture break / directional sweep -->
+  <path d="M554 512 H698"
+        fill="none" stroke="url(#accent)" stroke-width="54" stroke-linecap="round"/>
+
+  <!-- fingertip / action point -->
+  <circle cx="596" cy="346" r="29" fill="white"/>
+  <circle cx="596" cy="346" r="14" fill="url(#accent)"/>
 </svg>

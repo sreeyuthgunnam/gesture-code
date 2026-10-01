@@ -26,3 +26,6 @@ test/**
 
 # Generated packages
 *.vsix
+
+# Original artwork options (release assets live directly in media/)
+media/publish-options/**

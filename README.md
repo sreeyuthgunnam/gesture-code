@@ -1,3 +1,7 @@
+<p align="center">
+	<img src="media/icon.png" alt="Gesture Code logo" width="128">
+</p>
+
 # 🖐️ Gesture Code
 
 > Control VS Code with hand gestures using your webcam
@@ -7,7 +11,7 @@
 
 Gesture Code is a VS Code extension that lets you control your editor using hand gestures captured from your webcam. Perfect for accessibility, presentations, or hands-free coding.
 
-![Gesture Code Demo](media/demo.gif)
+![Gesture Code: control VS Code with hand gestures](media/cinematic.png)
 
 ## ✨ Features
 
