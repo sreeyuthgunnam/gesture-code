@@ -4,6 +4,8 @@
 src/**
 node_modules/**
 dist/**
+out/**
+docs/**
 
 # Config files
 .gitignore
@@ -20,7 +22,7 @@ test/**
 # Source maps and TypeScript files
 **/*.map
 **/*.ts
-!out/**/*.js
+!out/extension.js
 
 # Generated packages
 *.vsix

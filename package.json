@@ -2,7 +2,7 @@
   "name": "gesture-code",
   "displayName": "Gesture Code",
   "description": "Control VS Code with hand gestures using your webcam. Wave goodbye to keyboard shortcuts!",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "sreeyuthgunnam",
   "author": {
     "name": "Sreeyuth"
@@ -124,7 +124,7 @@
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "lint:fix": "eslint src --ext ts --fix",
-    "test": "node ./out/test/runTest.js"
+    "test": "node --test"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",

@@ -50,6 +50,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - No data sent to external servers
 - Camera feed stays entirely on user's machine
 
+## [0.2.1] - 2026-09-30
+
+### Fixed
+- Corrected MediaPipe handedness handling and aligned detected gesture names with shared mappings.
+- Applied sensitivity, cooldown, and overlay settings to live tracking.
+- Reported camera and inference failures in the tracking page instead of silently continuing.
+- Restricted the local gesture endpoint to same-origin browser requests.
+- Added gesture mapping and HTTP callback regression tests.
+- Excluded local documentation and stale webview assets from VSIX packages.
+
 ## [Unreleased]
 
 ### Planned

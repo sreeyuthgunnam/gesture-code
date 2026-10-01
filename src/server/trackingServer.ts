@@ -4,6 +4,7 @@
  */
 
 import * as http from 'http';
+import { GestureConfig } from '../types';
 
 export type GestureCallback = (gesture: string) => void;
 
@@ -11,6 +12,19 @@ export class TrackingServer {
     private server: http.Server | null = null;
     private port: number = 0;
     private onGestureCallback: GestureCallback | null = null;
+    private readonly options: Pick<GestureConfig, 'sensitivity' | 'showOverlay' | 'gestureCooldown'>;
+
+    constructor(options: Pick<GestureConfig, 'sensitivity' | 'showOverlay' | 'gestureCooldown'> = {
+        sensitivity: 0.7,
+        showOverlay: true,
+        gestureCooldown: 500
+    }) {
+        this.options = {
+            sensitivity: options.sensitivity,
+            showOverlay: options.showOverlay,
+            gestureCooldown: options.gestureCooldown
+        };
+    }
 
     async start(): Promise<number> {
         if (this.server) {
@@ -55,10 +69,13 @@ export class TrackingServer {
 
     private handleRequest(req: http.IncomingMessage, res: http.ServerResponse): void {
         const url = req.url || '/';
+        const origin = req.headers.origin;
 
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        if (origin && origin !== `http://localhost:${this.port}`) {
+            res.writeHead(403);
+            res.end('Forbidden');
+            return;
+        }
 
         if (req.method === 'OPTIONS') {
             res.writeHead(204);
@@ -259,8 +276,8 @@ export class TrackingServer {
             <div class="gesture-grid">
                 <div class="gesture-item" id="g_open_palm"><span class="gesture-icon">✋</span><div><div class="gesture-name">Open Palm</div><div class="gesture-action">📜 Scroll Up</div></div></div>
                 <div class="gesture-item" id="g_closed_fist"><span class="gesture-icon">👊</span><div><div class="gesture-name">Closed Fist</div><div class="gesture-action">📜 Scroll Down</div></div></div>
-                <div class="gesture-item" id="g_pointing_up"><span class="gesture-icon">👆</span><div><div class="gesture-name">Point Up</div><div class="gesture-action">⬆️ Cursor Up</div></div></div>
-                <div class="gesture-item" id="g_peace"><span class="gesture-icon">✌️</span><div><div class="gesture-name">Peace Sign</div><div class="gesture-action">💬 Toggle Comment</div></div></div>
+                <div class="gesture-item" id="g_point_up"><span class="gesture-icon">👆</span><div><div class="gesture-name">Point Up</div><div class="gesture-action">⬆️ Cursor Up</div></div></div>
+                <div class="gesture-item" id="g_peace_sign"><span class="gesture-icon">✌️</span><div><div class="gesture-name">Peace Sign</div><div class="gesture-action">💬 Toggle Comment</div></div></div>
                 <div class="gesture-item" id="g_thumbs_up"><span class="gesture-icon">👍</span><div><div class="gesture-name">Thumbs Up</div><div class="gesture-action">💾 Save File</div></div></div>
                 <div class="gesture-item" id="g_thumbs_down"><span class="gesture-icon">👎</span><div><div class="gesture-name">Thumbs Down</div><div class="gesture-action">❌ Close Tab</div></div></div>
             </div>
@@ -269,6 +286,7 @@ export class TrackingServer {
 
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.min.js"></script>
     <script>
+        var CONFIG = ${JSON.stringify(this.options)};
         var video = document.getElementById('video');
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext('2d');
@@ -293,13 +311,11 @@ export class TrackingServer {
         var lastGestureTime = 0;
         var commandCount = 0;
         var gestureHistory = [];
-        var currentHandedness = 'Right';
-
         var GESTURES = {
             open_palm: { icon: '✋', name: 'Open Palm', action: 'Scroll Up' },
             closed_fist: { icon: '👊', name: 'Closed Fist', action: 'Scroll Down' },
-            pointing_up: { icon: '👆', name: 'Point Up', action: 'Cursor Up' },
-            peace: { icon: '✌️', name: 'Peace Sign', action: 'Toggle Comment' },
+            point_up: { icon: '👆', name: 'Point Up', action: 'Cursor Up' },
+            peace_sign: { icon: '✌️', name: 'Peace Sign', action: 'Toggle Comment' },
             thumbs_up: { icon: '👍', name: 'Thumbs Up', action: 'Save File' },
             thumbs_down: { icon: '👎', name: 'Thumbs Down', action: 'Close Tab' }
         };
@@ -332,23 +348,46 @@ export class TrackingServer {
         }
 
         function initHands() {
-            hands = new Hands({
-                locateFile: function(file) { return 'https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/' + file; }
-            });
-            hands.setOptions({
-                maxNumHands: 1,
-                modelComplexity: 1,
-                minDetectionConfidence: 0.8,
-                minTrackingConfidence: 0.7
-            });
-            hands.onResults(onResults);
-            hands.initialize().then(function() {
-                statusEl.textContent = 'Ready - Click Start to begin';
-                startBtn.disabled = false;
-            }).catch(function(err) {
-                statusEl.textContent = 'Error loading MediaPipe: ' + err.message;
-                statusEl.classList.add('error');
-            });
+            try {
+                if (typeof Hands === 'undefined') {
+                    throw new Error('MediaPipe script did not load. Check your internet connection and refresh.');
+                }
+                hands = new Hands({
+                    locateFile: function(file) { return 'https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/' + file; }
+                });
+                hands.setOptions({
+                    maxNumHands: 1,
+                    modelComplexity: 1,
+                    minDetectionConfidence: CONFIG.sensitivity,
+                    minTrackingConfidence: CONFIG.sensitivity
+                });
+                hands.onResults(onResults);
+                hands.initialize().then(function() {
+                    statusEl.textContent = 'Ready - Click Start to begin';
+                    startBtn.disabled = false;
+                }).catch(function(err) {
+                    showTrackingError('Error loading MediaPipe: ' + err.message);
+                });
+            } catch (err) {
+                showTrackingError('Error loading MediaPipe: ' + err.message);
+            }
+        }
+
+        function showTrackingError(message) {
+            isRunning = false;
+            if (stream) {
+                var tracks = stream.getTracks();
+                for (var i = 0; i < tracks.length; i++) {
+                    tracks[i].stop();
+                }
+                stream = null;
+            }
+            video.srcObject = null;
+            statusEl.textContent = message;
+            statusEl.classList.remove('active');
+            statusEl.classList.add('error');
+            startBtn.textContent = '▶️ Start Tracking';
+            startBtn.disabled = false;
         }
 
         function startCamera() {
@@ -364,6 +403,9 @@ export class TrackingServer {
                         canvas.width = video.videoWidth || 640;
                         canvas.height = video.videoHeight || 480;
                         resolve(true);
+                    }).catch(function(err) {
+                        showTrackingError('Camera playback failed: ' + err.message);
+                        resolve(false);
                     });
                 }).catch(function(err) {
                     var msg = 'Camera error: ' + err.message;
@@ -374,8 +416,7 @@ export class TrackingServer {
                     } else if (err.name === 'NotReadableError') {
                         msg = '⚠️ Camera in use by another app.';
                     }
-                    statusEl.textContent = msg;
-                    statusEl.classList.add('error');
+                    showTrackingError(msg);
                     resolve(false);
                 });
             });
@@ -385,8 +426,8 @@ export class TrackingServer {
             if (!isRunning || !hands) return;
             hands.send({ image: video }).then(function() {
                 requestAnimationFrame(processFrame);
-            }).catch(function() {
-                requestAnimationFrame(processFrame);
+            }).catch(function(err) {
+                showTrackingError('Hand tracking failed: ' + err.message);
             });
         }
 
@@ -411,20 +452,13 @@ export class TrackingServer {
                 var landmarks = results.multiHandLandmarks[0];
                 var handedness = results.multiHandedness && results.multiHandedness[0];
                 
-                // MediaPipe returns handedness as if looking at your own hands (mirrored view)
-                // Since we mirror the video, we need to flip the label for display
-                // But for gesture detection, we use the RAW label from MediaPipe
-                var rawLabel = handedness ? handedness.label : 'Right';
-                currentHandedness = rawLabel;
+                var mediaPipeLabel = handedness ? handedness.label : 'Left';
+                var physicalHand = mediaPipeLabel === 'Right' ? 'Left' : 'Right';
+                handEl.textContent = physicalHand;
                 
-                // Display is mirrored, so flip the label for user display
-                var displayLabel = rawLabel === 'Right' ? 'Left' : 'Right';
-                handEl.textContent = displayLabel;
+                if (CONFIG.showOverlay) drawHand(landmarks);
                 
-                drawHand(landmarks);
-                
-                // Use raw handedness for gesture recognition
-                var result = recognizeGesture(landmarks, rawLabel);
+                var result = recognizeGesture(landmarks, physicalHand);
                 
                 if (result.gesture) {
                     gestureEl.textContent = GESTURES[result.gesture] ? GESTURES[result.gesture].name : result.gesture;
@@ -605,7 +639,7 @@ export class TrackingServer {
                 // Index significantly above other fingers
                 var indexHighest = indexTip.y < middleTip.y && indexTip.y < ringTip.y;
                 if (indexUp && indexHighest) {
-                    return { gesture: 'pointing_up', confidence: 0.9, debug: debug };
+                    return { gesture: 'point_up', confidence: 0.9, debug: debug };
                 }
             }
 
@@ -616,7 +650,7 @@ export class TrackingServer {
                 // Both pointing up
                 var bothUp = indexTip.y < indexMCP.y - 0.05 && middleTip.y < middleMCP.y - 0.05;
                 if (vSpread && bothUp) {
-                    return { gesture: 'peace', confidence: 0.9, debug: debug };
+                    return { gesture: 'peace_sign', confidence: 0.9, debug: debug };
                 }
             }
 
@@ -652,8 +686,7 @@ export class TrackingServer {
             if (!stableGesture) return;
             
             // Cooldown check
-            if (stableGesture === lastGesture && now - lastGestureTime < 1500) return;
-            if (now - lastGestureTime < 600) return;
+            if (now - lastGestureTime < CONFIG.gestureCooldown) return;
             
             lastGesture = stableGesture;
             lastGestureTime = now;

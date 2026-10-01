@@ -10,6 +10,7 @@
 
 import * as vscode from 'vscode';
 import { TrackingServer } from '../server/trackingServer';
+import { getGestureMapping, normalizeGestureType } from '../gestures/mappings';
 import { GestureConfig, GestureMapping } from '../types';
 
 /**
@@ -183,7 +184,7 @@ export class GestureCodeManager {
         try {
             // Create tracking server if not exists
             if (!this.trackingServer) {
-                this.trackingServer = new TrackingServer();
+                this.trackingServer = new TrackingServer(this.config);
 
                 // Set up gesture callback to execute VS Code commands
                 this.trackingServer.onGesture((gesture: string) => {
@@ -226,41 +227,21 @@ export class GestureCodeManager {
      */
     private async executeGestureCommand(gesture: string): Promise<void> {
         console.log('Received gesture from browser:', gesture);
+        const gestureType = normalizeGestureType(gesture);
+        const mapping = gestureType
+            ? getGestureMapping(gestureType, this.config.customMappings)
+            : undefined;
 
-        const gestureCommands: { [key: string]: () => Promise<void> } = {
-            'open_palm': async () => {
-                await vscode.commands.executeCommand('editorScroll', { to: 'up', by: 'halfPage' });
-                vscode.window.setStatusBarMessage('✋ Scroll Up', 1500);
-            },
-            'closed_fist': async () => {
-                await vscode.commands.executeCommand('editorScroll', { to: 'down', by: 'halfPage' });
-                vscode.window.setStatusBarMessage('✊ Scroll Down', 1500);
-            },
-            'pointing_up': async () => {
-                await vscode.commands.executeCommand('cursorUp');
-                vscode.window.setStatusBarMessage('☝️ Cursor Up', 1500);
-            },
-            'peace': async () => {
-                await vscode.commands.executeCommand('editor.action.commentLine');
-                vscode.window.setStatusBarMessage('✌️ Toggle Comment', 1500);
-            },
-            'thumbs_up': async () => {
-                await vscode.commands.executeCommand('workbench.action.files.save');
-                vscode.window.setStatusBarMessage('👍 File Saved!', 1500);
-            },
-            'thumbs_down': async () => {
-                await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-                vscode.window.setStatusBarMessage('👎 Tab Closed', 1500);
-            }
-        };
+        if (!mapping) {
+            return;
+        }
 
-        const command = gestureCommands[gesture];
-        if (command) {
-            try {
-                await command();
-            } catch (error) {
-                console.error('Failed to execute gesture command:', error);
-            }
+        try {
+            await vscode.commands.executeCommand(mapping.command, ...(mapping.args ?? []));
+            vscode.window.setStatusBarMessage(`${mapping.icon ?? '$(hand)'} ${mapping.label}`, 1500);
+        } catch (error) {
+            console.error('Failed to execute gesture command:', error);
+            vscode.window.showErrorMessage(`Failed to execute ${mapping.label}: ${(error as Error).message}`);
         }
     }
 

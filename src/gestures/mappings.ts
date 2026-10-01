@@ -131,6 +131,18 @@ export const DEFAULT_GESTURE_MAPPINGS: GestureMapping = {
 // Helper Functions
 // ============================================================================
 
+const LEGACY_GESTURE_ALIASES: Record<string, GestureType> = {
+    pointing_up: 'point_up',
+    peace: 'peace_sign'
+};
+
+export function normalizeGestureType(gesture: string): GestureType | undefined {
+    const normalizedGesture = LEGACY_GESTURE_ALIASES[gesture] ?? gesture;
+    return Object.prototype.hasOwnProperty.call(DEFAULT_GESTURE_MAPPINGS, normalizedGesture)
+        ? normalizedGesture as GestureType
+        : undefined;
+}
+
 /**
  * Get the gesture mapping for a specific gesture
  * Returns custom mapping if exists, otherwise default

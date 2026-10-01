@@ -182,7 +182,7 @@ export async function showGesturesCommand(_manager: GestureCodeManager): Promise
             if (action) {
                 try {
                     if (action.args) {
-                        await vscode.commands.executeCommand(action.command, action.args);
+                        await vscode.commands.executeCommand(action.command, ...action.args);
                     } else {
                         await vscode.commands.executeCommand(action.command);
                     }
