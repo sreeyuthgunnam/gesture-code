@@ -1,7 +1,3 @@
-<p align="center">
-	<img src="media/icon.png" alt="Gesture Code logo" width="128">
-</p>
-
 # 🖐️ Gesture Code
 
 > Control VS Code with hand gestures using your webcam
